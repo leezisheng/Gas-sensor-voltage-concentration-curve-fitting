@@ -11,7 +11,7 @@ from Read_txt_data import openreadtxt,opendirtxt
 # 测试txt文件路径
 test_txt_path = "C:\\Users\\lee\\Desktop\\ADC_CO2\\项目工程\\数据处理\\code\\test.txt"
 # 测试txt文件夹路径
-test_dir_path = "C:\\Users\\lee\\Desktop\\ADC_CO2\\项目工程\\数据处理\\data\\0"
+test_dir_path = "C:\\Users\\lee\\Desktop\\ADC_CO2\\项目工程\\数据处理\\data\\06"
 
 # 温度列表
 temp_list = []
@@ -53,7 +53,7 @@ def Data_Split(data_list):
             humi_list.append(temp_humi)
 
         if 'A' in data:
-            temp_verify = int(''.join([x for x in data if x.isdigit()]))
+            temp_verify = (int(''.join([x for x in data if x.isdigit()])))/1
             verify_list.append(temp_verify)
 
         if 'C' in data:
@@ -91,12 +91,55 @@ def RetCCList():
     return concentration_list
 
 if __name__=="__main__":
-    # 读取txt文件中数据
-    data_list = openreadtxt(test_txt_path)
-    if(Data_Split(data_list)!=False):
-        print(RetTempList())
-        print(RetHumiList())
-        print(RetVerifyList())
-        print(RetCCList())
+
+    # 为0时测试读取单个txt文件中数据；
+    # 为1时测试读取文件夹下多个txt文件中数据。
+    flag = 1
+
+    if flag == 0:
+        # 读取txt文件中数据
+        data_list = openreadtxt(test_txt_path)
+        if(Data_Split(data_list)!=False):
+            print(RetTempList())
+            print(RetHumiList())
+            print(RetVerifyList())
+            print(RetCCList())
+    else:
+        temp_temp_list   = []
+        temp_humi_list   = []
+        temp_verify_list = []
+        temp_cc_list     = []
+
+        # 读取文件夹下每一个子文件中txt路径
+        # 保存到列表txt_path中
+        txt_dir_path = opendirtxt(test_dir_path)
+
+        # 遍历txt文件路径读取
+        for file_path in txt_dir_path:
+            data_list = openreadtxt(file_path)
+            Data_Split(data_list)
+
+        temp_temp_list   = RetTempList()
+        temp_humi_list   = RetHumiList()
+        temp_verify_list = RetVerifyList()
+        temp_cc_list     = RetCCList()
+
+        print("=====================================数据显示=========================================")
+        print("显示后四个数据")
+        print("temp:",temp_temp_list[-5:-1])
+        print("humi:",temp_humi_list[-5:-1])
+        print("V",temp_verify_list[-5:-1])
+        print("cc:",temp_cc_list[-5:-1])
+
+        print("=====================================数据数量=========================================")
+        print("显示温度、湿度、电压和浓度数据个数")
+        print("temp len:",len(temp_temp_list))
+        print("humi len:", len(temp_humi_list))
+        print("V len:", len(temp_verify_list))
+        print("cc len:", len(temp_cc_list))
+
+
+
+
 
 

@@ -11,7 +11,7 @@ import os
 # 测试txt文件路径
 test_txt_path = "C:\\Users\\lee\\Desktop\\ADC_CO2\\项目工程\\数据处理\\code\\test.txt"
 # 测试txt文件夹路径
-test_dir_path = "C:\\Users\\lee\\Desktop\\ADC_CO2\\项目工程\\数据处理\\data"
+test_dir_path = "C:\\Users\\lee\\Desktop\\ADC_CO2\\项目工程\\数据处理\\data\\06"
 
 '''
 @ 函数功能                  ：读取txt文件中每一行的数据
