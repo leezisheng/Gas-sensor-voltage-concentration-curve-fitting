@@ -15,11 +15,6 @@ import matplotlib.pyplot as plt
 # 测试txt文件夹路径
 test_dir_path = "C:\\Users\\lee\\Desktop\\ADC_CO2\\项目工程\\数据处理\\data\\06"
 
-
-
-
-
-
 if __name__=="__main__":
 
     temp_temp_list = []
@@ -54,4 +49,3 @@ if __name__=="__main__":
     print("humi len:", len(temp_humi_list))
     print("V len:", len(temp_verify_list))
     print("cc len:", len(temp_cc_list))
-

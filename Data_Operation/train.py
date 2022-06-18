@@ -72,3 +72,10 @@ ax.scatter(x, y, z, c='r',label='Scatter plot of CO2 concentration')
 ax.legend()
 
 plt.show()
+
+# ======================================训练拟合曲线模型========================================
+
+
+
+
+
