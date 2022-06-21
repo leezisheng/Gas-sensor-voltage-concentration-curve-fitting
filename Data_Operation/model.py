@@ -7,6 +7,7 @@
 '''
 
 import numpy as np
+import sklearn.pipeline as pl
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 import pickle
@@ -35,7 +36,7 @@ class Polynomial:
     @ 输入参数 {list} cc_list     : 浓度列表
     @ 输入参数 {int}  poly_degree : 拟合曲线系数
     '''
-    def __init__(self, temp_list ,  verify_list , cc_list , poly_degree = 4):
+    def __init__(self, temp_list ,  verify_list , cc_list ,  poly_model = '', poly_degree = 4 ):
 
         # 温度列表
         self.temp_list      = temp_list
@@ -45,7 +46,9 @@ class Polynomial:
         self.cc_list        = cc_list
         # 拟合曲线系数
         self.poly_degree    = poly_degree
-    
+        # 模型
+        self.poly_model    = poly_model
+
     '''
     @ 函数作用                      ：模型训练
     @ 输入参数 {str} save_model_dir : 模型保存位置
@@ -62,34 +65,31 @@ class Polynomial:
         # 因变量列表赋值
         y_list = self.cc_list
 
-        # 构造多项式回归特征器
+        # 构造多项式回归特征扩展器
         poly_reg =PolynomialFeatures(self.poly_degree)
         x_poly = poly_reg.fit_transform(x_list)
 
         # 构造线性回归模型训练对象
-        poly_model = LinearRegression()
+        self.poly_model = LinearRegression()   # 线性回归器
 
         # 训练拟合曲线模型
-        poly_model.fit(x_poly , y_list)
+        self.poly_model.fit(x_poly , y_list)
 
         print("==============================================训练结果==============================================")
 
-        print("偏置项："+poly_model.intercept_)
-        print("系数项："+poly_model.coef_)
+        print("偏置项："+str(self.poly_model.intercept_))
+        print("系数项："+str(self.poly_model.coef_))
 
         print("==============================================保存模型==============================================")
 
         try :
-
-            output = open(str(save_model_dir)+'poly_reg_model.pkl', 'wb')
-            pickle.dump(poly_model, output)
-            print("保存模型成功，保存位置："+str(save_model_dir)+'poly_reg_model.pkl')
-
+            output = open(save_model_dir+'poly_reg_model.pkl', 'wb')
+            pickle.dump(self.poly_model, output)
+            print("保存模型成功，保存位置："+save_model_dir+'poly_reg_model.pkl')
         except:
-
             print("保存模型失败")
         
-        return poly_model
+        return self.poly_model
     
     '''
     @ 函数作用                         : 模型加载和模型预测
@@ -99,31 +99,33 @@ class Polynomial:
     @ 输入参数 {str}  predict_cc_list  : 预测模型保存路径，从其他保存的文件中读入，默认为''
     @ 返回参数 {list} predict_cc_list  : 预测浓度列表
     '''
-    def predict_model(self , test_temp_list, test_verify_list, poly_model = '', load_model_dir = ''):
+    def predict_model(self , test_temp_list, test_verify_list, load_model_dir = ''):
         # 预测浓度列表
         predict_cc_list = []
 
         # 临时变量，二维自变量列表
         temp_x_list = [list(t) for t in zip(test_temp_list, test_verify_list)]
 
-        try:
+        # 构造多项式回归特征扩展器
+        poly_reg =PolynomialFeatures(self.poly_degree)
+        x_poly = poly_reg.fit_transform(temp_x_list)
 
-            poly_model_file = open(str(load_model_dir)+'poly_reg_model.pkl', 'rb')
-            poly_model = pickle.load(poly_model_file)
-            print("==========================================加载模型成功==========================================")
+        if load_model_dir != '':
+            print("==========================================加载模型==========================================")
+            try:
+                poly_model_file = open(str(load_model_dir)+'poly_reg_model.pkl', 'rb')
+                self.poly_model = pickle.load(poly_model_file)
+                print("==========================================加载模型成功==========================================")
+                predict_cc_list = self.poly_model.predict(x_poly)
+            except:
+                print("==========================================加载模型失败==========================================")
 
-        except:
-
-            print("==========================================加载模型失败==========================================")
-        
-        try:
-
-            predict_cc_list = poly_model.predict(temp_x_list)
+        else:
             print("==========================================使用文件模型==========================================")
-
-        except:
-
-            print("==========================================文件模型错误==========================================")
+            try:
+                predict_cc_list = self.poly_model.predict(x_poly)
+            except:
+                print("==========================================文件模型错误==========================================")
 
         return predict_cc_list
     

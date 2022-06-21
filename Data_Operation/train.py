@@ -12,11 +12,12 @@ from mpl_toolkits.mplot3d import axes3d
 
 from Read_txt_data import openreadtxt,opendirtxt
 from Data_Analysis import Data_Split,RetTempList,RetHumiList,RetVerifyList,RetCCList
+from model import Polynomial
 
 # ========================================全局变量==========================================
 
 # 测试txt文件夹路径
-test_dir_path = "C:\\Users\\lee\\Desktop\\ADC_CO2\\项目工程\\数据处理\\data\\06"
+test_dir_path = "F:\\ADC_CO2\\项目工程\\数据处理\\data\\06"
 
 temp_temp_list = []
 temp_humi_list = []
@@ -75,7 +76,73 @@ plt.show()
 
 # ======================================训练拟合曲线模型========================================
 
+# 建立训练器模型
+train_model = Polynomial(
+                         temp_list = temp_temp_list,      # 温度数据列表
+                         verify_list = temp_verify_list,  # 电压数据列表
+                         cc_list = temp_cc_list,          # 浓度数据列表
+                         poly_degree = 4                  # 多项式次数
+                         )
+
+# 训练后模型
+poly_model = train_model.train_model(save_model_dir = 'F:\\ADC_CO2\\项目工程\\数据处理\\code\\Data_Operation\\save_model\\')
+# 模型预测
+predict_cc_list = train_model.predict_model(
+                                            test_temp_list = temp_temp_list, # 温度数据列表
+                                            test_verify_list = temp_verify_list, # 电压数据列表
+                                            )
+print(predict_cc_list)
+# ======================================绘制三维可视化图表========================================
+
+# +++++++++++++++++++++++++++++++++预测结果与实际结果对比散点图++++++++++++++++++++++++++++++++++++
+# 创建一个图框
+fig = plt.figure()
+ax = fig.add_subplot(projection='3d')
+
+x = temp_temp_list
+y = temp_verify_list
+z = temp_cc_list
+p = predict_cc_list
+
+ax.set_xlabel('Temp(℃)')
+ax.set_ylabel('Verify(MV)')
+ax.set_zlabel('CO2 CC(ppm)')
+
+ax.scatter(x, y, z, c='r',label='Scatter plot of true CO2 concentration')
+ax.scatter(x, y, p, c='b',label='Scatter plot of predict CO2 concentration')
+
+ax.legend()
+
+plt.show()
+
+# +++++++++++++++++++++++++++++++++预测结果与实际结果对比曲线图++++++++++++++++++++++++++++++++++++
+# 创建一个图框
+fig = plt.figure()
+ax = fig.add_subplot(projection='3d')
+
+x = temp_temp_list
+y = temp_verify_list
+z = temp_cc_list
+
+ax.set_xlabel('Temp(℃)')
+ax.set_ylabel('Verify(MV)')
+ax.set_zlabel('CO2 CC(ppm)')
+
+ax.scatter(x, y, z, c='r',label='Scatter plot of true CO2 concentration')
 
 
+x_plot = np.linspace(0, 40, 1000)
+y_plot = np.linspace(285, 320, 1000)
+z_plot = train_model.predict_model(
+                                   test_temp_list = x_plot, # 温度数据列表
+                                   test_verify_list = y_plot # 电压数据列表
+                                  )
 
+ax.plot(x_plot, y_plot, z_plot , label='graph plot of predict CO2 concentration')
 
+ax.legend()
+plt.show()
+
+# ======================================评估模型========================================
+# 计算MSE
+MSE = train_model.evaluate_model(temp_cc_list , predict_cc_list)
