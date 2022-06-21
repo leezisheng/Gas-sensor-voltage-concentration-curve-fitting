@@ -13,6 +13,7 @@ from mpl_toolkits.mplot3d import axes3d
 from Read_txt_data import openreadtxt,opendirtxt
 from Data_Analysis import Data_Split,RetTempList,RetHumiList,RetVerifyList,RetCCList
 from model import Polynomial
+from data_preproccess import Data_Preprocess
 
 # ========================================全局变量==========================================
 
@@ -53,6 +54,17 @@ print("temp len:", len(temp_temp_list))
 print("humi len:", len(temp_humi_list))
 print("V len:", len(temp_verify_list))
 print("cc len:", len(temp_cc_list))
+
+# ===========================================数据预处理==========================================
+# 数据归一化
+process_data = Data_Preprocess(temp_temp_list, temp_verify_list, temp_cc_list)
+temp_temp_list, temp_verify_list, temp_cc_list = process_data.data_normalization(norm = 'l1')
+
+
+# 从元组转换到列表
+temp_temp_list   = list(temp_temp_list.flatten())
+temp_verify_list = list(temp_verify_list.flatten())
+temp_cc_list     = list(temp_cc_list.flatten())
 
 # ======================================绘制三维可视化图表========================================
 
@@ -131,8 +143,8 @@ ax.set_zlabel('CO2 CC(ppm)')
 ax.scatter(x, y, z, c='r',label='Scatter plot of true CO2 concentration')
 
 
-x_plot = np.linspace(0, 40, 1000)
-y_plot = np.linspace(285, 320, 1000)
+x_plot = np.linspace(0.0002  , 0.0020  , 10000)
+y_plot = np.linspace(0.001450, 0.001650, 10000)
 z_plot = train_model.predict_model(
                                    test_temp_list = x_plot, # 温度数据列表
                                    test_verify_list = y_plot # 电压数据列表
