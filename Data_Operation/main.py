@@ -14,11 +14,13 @@ from Read_txt_data import openreadtxt,opendirtxt
 from Data_Analysis import Data_Split,RetTempList,RetHumiList,RetVerifyList,RetCCList
 from model import Polynomial
 from data_preproccess import Data_Preprocess
+from sklearn.model_selection import train_test_split
 
 # ========================================全局变量==========================================
+device_id = '09'
 
 # 测试txt文件夹路径
-test_dir_path = "F:\\ADC_CO2\\项目工程\\数据处理\\data\\06"
+test_dir_path = "F:\\ADC_CO2\\项目工程\\数据处理\\data\\"+device_id
 
 temp_temp_list = []
 temp_humi_list = []
@@ -34,12 +36,18 @@ txt_dir_path = opendirtxt(test_dir_path)
 # 遍历txt文件路径读取
 for file_path in txt_dir_path:
     data_list = openreadtxt(file_path)
+    # print(data_list)
     Data_Split(data_list)
 
 temp_temp_list = RetTempList()
 temp_humi_list = RetHumiList()
 temp_verify_list = RetVerifyList()
 temp_cc_list = RetCCList()
+
+print(temp_temp_list)
+print(temp_humi_list)
+print(temp_verify_list)
+print(temp_cc_list)
 
 print("=====================================数据显示=========================================")
 print("显示后四个数据")
@@ -56,15 +64,10 @@ print("V len:", len(temp_verify_list))
 print("cc len:", len(temp_cc_list))
 
 # ===========================================数据预处理==========================================
-# 数据归一化
-process_data = Data_Preprocess(temp_temp_list, temp_verify_list, temp_cc_list)
-temp_temp_list, temp_verify_list, temp_cc_list = process_data.data_normalization(norm = 'l1')
 
 
-# 从元组转换到列表
-temp_temp_list   = list(temp_temp_list.flatten())
-temp_verify_list = list(temp_verify_list.flatten())
-temp_cc_list     = list(temp_cc_list.flatten())
+# ===========================================数据拆分============================================
+
 
 # ======================================绘制三维可视化图表========================================
 
@@ -75,6 +78,7 @@ ax = fig.add_subplot(projection='3d')
 x = temp_temp_list
 y = temp_verify_list
 z = temp_cc_list
+print(z)
 
 ax.set_xlabel('Temp(℃)')
 ax.set_ylabel('Verify(V)')
@@ -97,12 +101,15 @@ train_model = Polynomial(
                          )
 
 # 训练后模型
-poly_model = train_model.train_model(save_model_dir = 'F:\\ADC_CO2\\项目工程\\数据处理\\code\\Data_Operation\\save_model\\')
+poly_model = train_model.train_model(save_model_dir = 'F:\\ADC_CO2\\项目工程\\数据处理\\code\\Data_Operation\\save_model\\'+device_id+"\\")
 # 模型预测
 predict_cc_list = train_model.predict_model(
                                             test_temp_list = temp_temp_list, # 温度数据列表
                                             test_verify_list = temp_verify_list, # 电压数据列表
                                             )
+for data in predict_cc_list:
+    data = abs(data)
+
 print(predict_cc_list)
 # ======================================绘制三维可视化图表========================================
 
@@ -142,15 +149,16 @@ ax.set_zlabel('CO2 CC(ppm)')
 
 ax.scatter(x, y, z, c='r',label='Scatter plot of true CO2 concentration')
 
+predict_cc_list = train_model.predict_model(
+                                            test_temp_list   = temp_temp_list, # 温度数据列表
+                                            test_verify_list = temp_verify_list, # 电压数据列表
+                                            load_model_dir   = "F:\\ADC_CO2\\项目工程\\数据处理\\code\\Data_Operation\\save_model\\06"
+                                            )
 
-x_plot = np.linspace(0.0002  , 0.0020  , 10000)
-y_plot = np.linspace(0.001450, 0.001650, 10000)
-z_plot = train_model.predict_model(
-                                   test_temp_list = x_plot, # 温度数据列表
-                                   test_verify_list = y_plot # 电压数据列表
-                                  )
+for data in predict_cc_list:
+    data = abs(data)
 
-ax.plot(x_plot, y_plot, z_plot , label='graph plot of predict CO2 concentration')
+ax.plot(temp_temp_list, temp_verify_list, predict_cc_list, label='graph plot of predict CO2 concentration')
 
 ax.legend()
 plt.show()

@@ -114,7 +114,7 @@ class Polynomial:
         if load_model_dir != '':
             print("==========================================加载模型==========================================")
             try:
-                poly_model_file = open(str(load_model_dir)+'poly_reg_model.pkl', 'rb')
+                poly_model_file = open(str(load_model_dir)+'\\'+'poly_reg_model.pkl', 'rb')
                 self.poly_model = pickle.load(poly_model_file)
                 print("==========================================加载模型成功==========================================")
                 predict_cc_list = self.poly_model.predict(x_poly)
