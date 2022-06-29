@@ -134,35 +134,6 @@ ax.legend()
 
 plt.show()
 
-# +++++++++++++++++++++++++++++++++预测结果与实际结果对比曲线图++++++++++++++++++++++++++++++++++++
-# 创建一个图框
-fig = plt.figure()
-ax = fig.add_subplot(projection='3d')
-
-x = temp_temp_list
-y = temp_verify_list
-z = temp_cc_list
-
-ax.set_xlabel('Temp(℃)')
-ax.set_ylabel('Verify(MV)')
-ax.set_zlabel('CO2 CC(ppm)')
-
-ax.scatter(x, y, z, c='r',label='Scatter plot of true CO2 concentration')
-
-predict_cc_list = train_model.predict_model(
-                                            test_temp_list   = temp_temp_list, # 温度数据列表
-                                            test_verify_list = temp_verify_list, # 电压数据列表
-                                            load_model_dir   = "F:\\ADC_CO2\\项目工程\\数据处理\\code\\Data_Operation\\save_model\\06"
-                                            )
-
-for data in predict_cc_list:
-    data = abs(data)
-
-ax.plot(temp_temp_list, temp_verify_list, predict_cc_list, label='graph plot of predict CO2 concentration')
-
-ax.legend()
-plt.show()
-
 # ======================================评估模型========================================
 # 计算MSE
 MSE = train_model.evaluate_model(temp_cc_list , predict_cc_list)

@@ -36,7 +36,7 @@ class Polynomial:
     @ 输入参数 {list} cc_list     : 浓度列表
     @ 输入参数 {int}  poly_degree : 拟合曲线系数
     '''
-    def __init__(self, temp_list ,  verify_list , cc_list ,  poly_model = '', poly_degree = 4 ):
+    def __init__(self, temp_list ,  verify_list , cc_list = [],  poly_model = '', poly_degree = 4 ):
 
         # 温度列表
         self.temp_list      = temp_list
