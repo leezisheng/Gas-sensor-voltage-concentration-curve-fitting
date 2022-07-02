@@ -13,12 +13,12 @@ from mpl_toolkits.mplot3d import axes3d
 from Read_txt_data import openreadtxt,opendirtxt
 from Data_Analysis import Data_Split,RetTempList,RetHumiList,RetVerifyList,RetCCList
 from model import Polynomial
-from data_preproccess import Data_Preprocess
+from data_preproccess import Data_Preprocess , Average_Filter
 from sklearn.model_selection import train_test_split
 
 # ========================================全局变量==========================================
 
-device_id = '07'
+device_id = '09'
 
 # 测试txt文件夹路径
 test_dir_path = "F:\\ADC_CO2\\项目工程\\数据处理\\test_data\\"+device_id
@@ -44,6 +44,8 @@ for file_path in txt_dir_path:
 temp_temp_list = RetTempList()
 temp_humi_list = RetHumiList()
 temp_verify_list = RetVerifyList()
+# 对采集电压值进行均值滤波
+temp_verify_list = Average_Filter(temp_verify_list,10)
 
 print(temp_temp_list)
 print(temp_humi_list)
@@ -77,6 +79,9 @@ predict_cc_list = train_model.predict_model(
 # 取绝对值， 滤去负值
 for data in predict_cc_list:
     data = abs(data)
+
+print(max(predict_cc_list))
+print(min(predict_cc_list))
 
 # 创建一个图框
 fig = plt.figure()

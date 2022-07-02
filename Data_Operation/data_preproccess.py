@@ -88,6 +88,25 @@ class Data_Preprocess:
 
         return standard_temp_list , standard_verify_list , standard_cc_list
 
+'''
+        @ 函数作用                        ：均值滤波
+        @ 输入参数 {list} x               : 初始预测浓度列表
+        @ 输入参数 {list} filt_length     : 均值滤波宽度
+        @ 输出参数 {list} cc_list         : 滤波后列表
+'''
+def Average_Filter(x, filt_length):
+    N = len(x)
+    res = []
+    for i in range(N):
+        if i <= filt_length // 2 or i >= N - (filt_length // 2):
+            temp = x[i]
+        else:
+            sum = 0
+            for j in range(filt_length):
+                sum += x[i - filt_length // 2 + j]
+            temp = sum * 1.0 / filt_length
+        res.append(temp)
+    return res
 
 
 
