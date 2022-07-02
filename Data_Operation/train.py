@@ -14,7 +14,7 @@ import math
 from Read_txt_data import openreadtxt,opendirtxt
 from Data_Analysis import Data_Split,RetTempList,RetHumiList,RetVerifyList,RetCCList
 from model import Polynomial
-from data_preproccess import Data_Preprocess
+from data_preproccess import Data_Preprocess,Average_Filter
 from sklearn.model_selection import train_test_split
 
 # ========================================全局变量==========================================
