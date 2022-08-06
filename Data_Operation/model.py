@@ -12,7 +12,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 import pickle
 from sklearn.metrics import mean_squared_error
-
+import math
 
 # ======================================多元多项式拟合算法=====================================================
 # 使用多项式函数来拟合生成的数据，然后使用均方误差作为误差函数对拟合出的多项式进行评估
@@ -143,6 +143,9 @@ class Polynomial:
         cc_predict_list = predict_cc_list
 
         print('MSE为:',mean_squared_error(cc_test_list,cc_predict_list))
-        mse = mean_squared_error(cc_test_list,cc_predict_list)
-        return mse
+        mse  = mean_squared_error(cc_test_list,cc_predict_list)
+        rmse = math.sqrt(mse)
+        print('RMSE为:', rmse)
+
+        return mse , rmse
 

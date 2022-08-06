@@ -14,19 +14,21 @@ from Read_txt_data import openreadtxt,opendirtxt
 from Data_Analysis import Data_Split,RetTempList,RetHumiList,RetVerifyList,RetCCList
 from model import Polynomial
 from data_preproccess import Data_Preprocess , Average_Filter
-from sklearn.model_selection import train_test_split
 
 # ========================================全局变量==========================================
 
-device_id = '09'
+device_id = '12'
 
 # 测试txt文件夹路径
 test_dir_path = "F:\\ADC_CO2\\项目工程\\数据处理\\test_data\\"+device_id
-
+# 测试得到实际值
 temp_temp_list   = []
 temp_humi_list   = []
 temp_verify_list = []
+# 预测值
 predict_cc_list  = []
+# 实际值
+true_cc_list = []
 
 # ========================================读取数据==========================================
 
@@ -37,9 +39,37 @@ txt_dir_path = opendirtxt(test_dir_path)
 
 # 遍历txt文件路径读取
 for file_path in txt_dir_path:
+    # 文件命名原则 : test-传感器编号-测定浓度（ppm）//10000-温度
+    # 示例 : F:\ADC_CO2\项目工程\数据处理\test_data\07\test-7-1-25.txt
+    # 含义 ： 七号传感器在10000ppm、25摄氏度时输出数据
     data_list = openreadtxt(file_path)
-    # print(data_list)
     Data_Split(data_list)
+
+    # 数据长度
+    list_len = int(len(data_list)/4)
+
+    if '-1-' in file_path :
+        temp_true_cc_list = [10000]*list_len
+        true_cc_list.extend(temp_true_cc_list)
+
+    elif '-2.5-' in file_path :
+        temp_true_cc_list = [25000]*list_len
+        true_cc_list.extend(temp_true_cc_list)
+
+    elif '-3-' in file_path :
+        temp_true_cc_list = [30000]*list_len
+        true_cc_list.extend(temp_true_cc_list)
+
+    elif '-4-' in file_path :
+        temp_true_cc_list = [40000]*list_len
+        true_cc_list.extend(temp_true_cc_list)
+
+    elif '-5-' in file_path :
+        temp_true_cc_list = [50000]*list_len
+        true_cc_list.extend(temp_true_cc_list)
+
+# print(true_cc_list)
+print("true cc len :",len(true_cc_list))
 
 temp_temp_list = RetTempList()
 temp_humi_list = RetHumiList()
@@ -87,18 +117,26 @@ print(min(predict_cc_list))
 fig = plt.figure()
 ax = fig.add_subplot(projection='3d')
 
-x = temp_temp_list
-y = temp_verify_list
-z = predict_cc_list
-print(z)
+x  = temp_temp_list
+y  = temp_verify_list
+z  = predict_cc_list
+zz = true_cc_list
+
+# print(z)
+print(len(z))
 
 ax.set_xlabel('Temp(℃)')
 ax.set_ylabel('Verify(V)')
 ax.set_zlabel('CO2 CC(ppm)')
 
-ax.scatter(x, y, z, c='r',label='Scatter plot of CO2 concentration')
+ax.scatter(x, y, z,  c='r',label='scatter plot of predict CO2 concentration')
+ax.scatter(x, y, zz, c='b',label='Scatter plot of true CO2 concentration')
 
 ax.legend()
 
 plt.show()
+
+# ======================================评估模型========================================
+# 计算MSE
+MSE , RMSE = train_model.evaluate_model(true_cc_list , predict_cc_list)
 
