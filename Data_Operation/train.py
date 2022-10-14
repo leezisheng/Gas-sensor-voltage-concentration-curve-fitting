@@ -18,10 +18,10 @@ from data_preproccess import Data_Preprocess,Average_Filter
 from sklearn.model_selection import train_test_split
 
 # ========================================全局变量==========================================
-device_id = '06'
+device_id = '11'
 
 # 测试txt文件夹路径
-test_dir_path = "F:\\ADC_CO2\\项目工程\\数据处理\\data\\"+device_id
+test_dir_path = "F:\\ADC_CO2\\项目工程\\数据处理\\last_data\\"+device_id
 
 temp_temp_list = []
 temp_humi_list = []
@@ -96,11 +96,14 @@ train_model = Polynomial(
                          temp_list = temp_temp_list,      # 温度数据列表
                          verify_list = temp_verify_list,  # 电压数据列表
                          cc_list = temp_cc_list,          # 浓度数据列表
-                         poly_degree = 4                  # 多项式次数
+                         poly_degree = 2                  # 多项式次数
                          )
 
 # 训练后模型
 poly_model = train_model.train_model(save_model_dir = 'F:\\ADC_CO2\\项目工程\\数据处理\\code\\Data_Operation\\save_model\\'+device_id+"\\")
+
+
+
 # 模型预测
 predict_cc_list = train_model.predict_model(
                                             test_temp_list = temp_temp_list, # 温度数据列表

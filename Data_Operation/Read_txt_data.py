@@ -7,6 +7,7 @@
 '''
 
 import os
+import chardet
 
 # 测试txt文件夹路径
 test_dir_path = "F:\\ADC_CO2\\项目工程\\数据处理\\data\\07"
@@ -18,8 +19,15 @@ test_dir_path = "F:\\ADC_CO2\\项目工程\\数据处理\\data\\07"
 '''
 def openreadtxt(file_name):
     data = []
+    # 默认编码方式为utf-8
+    encoding = 'utf-8'
+
+    # 二进制方式读取，获取字节数据，检测类型
+    with open(file_name, 'rb') as f:
+        encoding = chardet.detect(f.read())['encoding']
+
     # 打开文件
-    file = open(file_name,'r')
+    file = open(file_name,'r',encoding = encoding)
     # 读取所有行
     file_data = file.readlines()
     for row in file_data:

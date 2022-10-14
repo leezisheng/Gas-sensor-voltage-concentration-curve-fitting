@@ -79,6 +79,8 @@ class Polynomial:
 
         print("偏置项："+str(self.poly_model.intercept_))
         print("系数项："+str(self.poly_model.coef_))
+        print("features：" + str(poly_reg.get_feature_names()))
+        print(x_poly)
 
         print("==============================================保存模型==============================================")
 

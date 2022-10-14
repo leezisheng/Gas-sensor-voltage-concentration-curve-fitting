@@ -17,10 +17,10 @@ from data_preproccess import Data_Preprocess , Average_Filter
 
 # ========================================全局变量==========================================
 
-device_id = '12'
+device_id = '08'
 
 # 测试txt文件夹路径
-test_dir_path = "F:\\ADC_CO2\\项目工程\\数据处理\\test_data\\"+device_id
+test_dir_path = "F:\\ADC_CO2\\项目工程\\数据处理\\test_data_02\\"+device_id
 # 测试得到实际值
 temp_temp_list   = []
 temp_humi_list   = []
@@ -51,22 +51,38 @@ for file_path in txt_dir_path:
     if '-1-' in file_path :
         temp_true_cc_list = [10000]*list_len
         true_cc_list.extend(temp_true_cc_list)
+        print(' file_path : ' , file_path)
+        print(' length of temp_true_cc_list : ' , list_len)
+
+    elif '-2-' in file_path :
+        temp_true_cc_list = [20000]*list_len
+        true_cc_list.extend(temp_true_cc_list)
+        print(' file_path : ' , file_path)
+        print(' length of temp_true_cc_list : ' , list_len)
 
     elif '-2.5-' in file_path :
         temp_true_cc_list = [25000]*list_len
         true_cc_list.extend(temp_true_cc_list)
+        print(' file_path : ' , file_path)
+        print(' length of temp_true_cc_list : ' , list_len)
 
     elif '-3-' in file_path :
         temp_true_cc_list = [30000]*list_len
         true_cc_list.extend(temp_true_cc_list)
+        print(' file_path : ' , file_path)
+        print(' length of temp_true_cc_list : ' , list_len)
 
     elif '-4-' in file_path :
         temp_true_cc_list = [40000]*list_len
         true_cc_list.extend(temp_true_cc_list)
+        print(' file_path : ' , file_path)
+        print(' length of temp_true_cc_list : ' , list_len)
 
     elif '-5-' in file_path :
         temp_true_cc_list = [50000]*list_len
         true_cc_list.extend(temp_true_cc_list)
+        print(' file_path : ' , file_path)
+        print(' length of temp_true_cc_list : ' , list_len)
 
 # print(true_cc_list)
 print("true cc len :",len(true_cc_list))
@@ -98,7 +114,7 @@ print("V len:", len(temp_verify_list))
 train_model = Polynomial(
                          temp_list = temp_temp_list,      # 温度数据列表
                          verify_list = temp_verify_list,  # 电压数据列表
-                         poly_degree = 4                  # 多项式次数
+                         poly_degree = 2                  # 多项式次数
                          )
 
 predict_cc_list = train_model.predict_model(
